@@ -5,10 +5,14 @@ import 'game_provider.dart';
 class ScoreWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<GameProvider>(
-      builder: (context, gameProvider, child) {
-        return Text('Score: ${gameProvider.score}');
-      },
+    final score = context.watch<GameProvider>().score;
+    
+    return Container(
+      padding: EdgeInsets.all(16),
+      child: Text(
+        'Score: $score',
+        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      ),
     );
   }
 }
