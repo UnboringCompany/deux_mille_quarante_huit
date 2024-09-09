@@ -8,22 +8,27 @@ class SettingsPanel extends StatelessWidget {
     final gameProvider = context.watch<GameProvider>();
 
     return Container(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Settings',
             style: TextStyle(
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
+              fontSize: 24.0,
+              fontWeight: FontWeight.w900,
+              color: Colors.blueAccent,
             ),
           ),
-          SizedBox(height: 16.0),
+          const SizedBox(height: 16.0),
           SwitchListTile(
-            title: Text('Mode Dyscalculique'),
+            title: const Text('Mode Dyscalculique',
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                )),
             value: gameProvider.isDyscalculicModeEnabled,
+            activeColor: Colors.blueAccent,
             onChanged: (value) {
               gameProvider.isDyscalculicModeEnabled = value;
               gameProvider.notifyListeners();

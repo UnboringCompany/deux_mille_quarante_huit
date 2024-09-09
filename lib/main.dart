@@ -6,7 +6,10 @@ import 'widgets/score.dart';
 import 'widgets/settings_panel.dart';
 
 class GameScreen extends StatefulWidget {
+  const GameScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _GameScreenState createState() => _GameScreenState();
 }
 
@@ -18,11 +21,12 @@ class _GameScreenState extends State<GameScreen> {
     final gameProvider = context.watch<GameProvider>();
 
     return Scaffold(
+      backgroundColor: const Color.fromRGBO(225, 215, 198, 1),
       appBar: AppBar(
-        title: Text("2048 Flutter"),
+        backgroundColor: const Color.fromRGBO(225, 215, 198, 1),
         actions: [
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.settings),
             onPressed: () {
               setState(() {
                 _isSettingsPanelOpen = !_isSettingsPanelOpen;
@@ -50,11 +54,16 @@ class _GameScreenState extends State<GameScreen> {
           children: [
             Column(
               children: [
+                const Text(
+                  "(Not)Boring 2048",
+                  style: TextStyle(fontSize: 36, fontWeight: FontWeight.w900, color: Colors.blueAccent),
+                ),
+                const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                 ScoreWidget(),
                 AspectRatio(
-                  aspectRatio: 1, // Maintenir une grille carrée
+                  aspectRatio: 1,
                   child: GridWidget(
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                   ),
                 ),
                 Padding(
@@ -62,12 +71,12 @@ class _GameScreenState extends State<GameScreen> {
                   child: gameProvider.isGameOver
                       ? Column(
                           children: [
-                            Text(
+                            const Text(
                               "Game Over",
-                              style: TextStyle(fontSize: 32, color: Colors.red),
+                              style: TextStyle(fontSize: 32, color: Colors.blueAccent),
                             ),
                             IconButton(
-                              icon: Icon(Icons.refresh, size: 48),
+                              icon: const Icon(Icons.refresh, size: 48),
                               onPressed: () {
                                 context.read<GameProvider>().resetGame();
                               },
@@ -75,7 +84,7 @@ class _GameScreenState extends State<GameScreen> {
                           ],
                         )
                       : IconButton(
-                          icon: Icon(Icons.refresh, size: 48),
+                          icon: const Icon(Icons.refresh, size: 48),
                           onPressed: () {
                             context.read<GameProvider>().resetGame();
                           },
@@ -84,15 +93,15 @@ class _GameScreenState extends State<GameScreen> {
               ],
             ),
             AnimatedPositioned(
-              duration: Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: 200),
               curve: Curves.easeInOut,
               right: _isSettingsPanelOpen
                   ? 0
-                  : -MediaQuery.of(context).size.width * 0.8,
-              width: MediaQuery.of(context).size.width * 0.75,
+                  : -MediaQuery.of(context).size.width,
+              width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
               child: Container(
-                color: Colors.white,
+                color: const Color.fromRGBO(225, 215, 198, 1),
                 child: SettingsPanel(),
               ),
             ),
@@ -107,7 +116,7 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (context) => GameProvider(),
-      child: MaterialApp(
+      child: const MaterialApp(
         debugShowCheckedModeBanner: false, // Désactive le bandeau "Debug"
         home: GameScreen(),
       ),

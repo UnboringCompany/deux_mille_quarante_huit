@@ -59,7 +59,6 @@ class GameProvider with ChangeNotifier {
     }
   }
 
-  // Nouvelle fonction générique pour gérer les mouvements
   void move(Function getLine, Function setLine) {
     bool hasChanged = false;
 
@@ -112,13 +111,11 @@ class GameProvider with ChangeNotifier {
 
   List<int> _slideAndMerge(List<int> line) {
     line = line.where((e) => e != 0).toList(); // Enlever les zéros
-    bool merged = false;
     for (int i = 0; i < line.length - 1; i++) {
       if (line[i] == line[i + 1]) {
         line[i] = line[i] * 2;
         score += line[i];
         line[i + 1] = 0;
-        merged = true;
       }
     }
     line = line.where((e) => e != 0).toList();
@@ -138,7 +135,7 @@ class GameProvider with ChangeNotifier {
 
   void nextTurn() {
     // Add a delay before spawning a new tile
-    Future.delayed(Duration(milliseconds: 150), () {
+    Future.delayed(const Duration(milliseconds: 150), () {
       _spawnRandom();
       notifyListeners();
 
