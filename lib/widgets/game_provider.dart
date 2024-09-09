@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 class GameProvider with ChangeNotifier {
   List<List<int>> grid = List.generate(4, (_) => List.generate(4, (_) => 0));
@@ -92,12 +93,17 @@ class GameProvider with ChangeNotifier {
   }
 
   void nextTurn() {
-    _spawnRandom();
-    notifyListeners();
+    notifyListeners(); // Notify listeners to update the UI with the movement
 
-    if (_isGameOver() && onGameOver != null) {
-      onGameOver();
-    }
+    // Add a delay before spawning a new tile
+    Future.delayed(Duration(milliseconds: 100), () {
+      _spawnRandom();
+      notifyListeners(); // Notify listeners again to update the UI with the new tile
+
+      if (_isGameOver() && onGameOver != null) {
+        onGameOver();
+      }
+    });
   }
 
   bool _canMergeTiles() {
