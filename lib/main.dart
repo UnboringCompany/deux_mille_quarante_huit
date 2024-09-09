@@ -5,7 +5,6 @@ import 'widgets/grid.dart';
 import 'widgets/score.dart';
 import 'widgets/settings_panel.dart';
 
-
 class GameScreen extends StatefulWidget {
   @override
   _GameScreenState createState() => _GameScreenState();
@@ -53,17 +52,43 @@ class _GameScreenState extends State<GameScreen> {
               children: [
                 ScoreWidget(),
                 AspectRatio(
-                  aspectRatio: 1, 
+                  aspectRatio: 1, // Maintenir une grille carrée
                   child: GridWidget(
                     physics: NeverScrollableScrollPhysics(),
                   ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: gameProvider.isGameOver
+                      ? Column(
+                          children: [
+                            Text(
+                              "Game Over",
+                              style: TextStyle(fontSize: 32, color: Colors.red),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.refresh, size: 48),
+                              onPressed: () {
+                                context.read<GameProvider>().resetGame();
+                              },
+                            ),
+                          ],
+                        )
+                      : IconButton(
+                          icon: Icon(Icons.refresh, size: 48),
+                          onPressed: () {
+                            context.read<GameProvider>().resetGame();
+                          },
+                        ),
                 ),
               ],
             ),
             AnimatedPositioned(
               duration: Duration(milliseconds: 200),
               curve: Curves.easeInOut,
-              right: _isSettingsPanelOpen ? 0 : -MediaQuery.of(context).size.width * 0.8,
+              right: _isSettingsPanelOpen
+                  ? 0
+                  : -MediaQuery.of(context).size.width * 0.8,
               width: MediaQuery.of(context).size.width * 0.75,
               height: MediaQuery.of(context).size.height,
               child: Container(
@@ -73,43 +98,10 @@ class _GameScreenState extends State<GameScreen> {
             ),
           ],
         ),
-
-      ),
-    ),
-    Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      child: gameProvider.isGameOver
-          ? Column(
-              children: [
-                Text(
-                  "Game Over",
-                  style: TextStyle(fontSize: 32, color: Colors.red, fontWeight: FontWeight.w500),
-                ),
-                IconButton(
-                  icon: Icon(Icons.refresh, size: 48),
-                  onPressed: () {
-                    context.read<GameProvider>().resetGame();
-                  },
-                ),
-              ],
-            )
-          : IconButton(
-              icon: Icon(Icons.refresh, size: 48),
-              onPressed: () {
-                context.read<GameProvider>().resetGame();
-              },
-            ),
-    ),
-  ],
-),
-
       ),
     );
   }
 }
-
-
-
 
 void main() {
   runApp(
