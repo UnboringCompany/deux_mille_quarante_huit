@@ -56,9 +56,9 @@ class _GameScreenState extends State<GameScreen> {
               children: [
                 const Text(
                   "(Not)Boring 2048",
-                  style: TextStyle(fontSize: 36, fontWeight: FontWeight.w900, color: Colors.blueAccent),
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Colors.blueAccent),
                 ),
-                const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                const Padding(padding: EdgeInsets.symmetric(vertical: 5)),
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -74,7 +74,7 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  padding: const EdgeInsets.symmetric(vertical: 5),
                   child: gameProvider.isGameOver
                       ? Column(
                           children: [

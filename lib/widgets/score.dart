@@ -11,11 +11,11 @@ class ScoreWidget extends StatelessWidget {
       children: [
         Text(
           'Score: ${gameProvider.score}',
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: Colors.blue),
+          style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w800, color: Colors.blue),
         ),
         Text(
           'Meilleur Score: ${gameProvider.bestScore}',  // Afficher le meilleur score
-          style: const TextStyle(fontSize: 18, color: Colors.blueGrey),
+          style: const TextStyle(fontSize: 16, color: Colors.blueGrey),
         ),
       ],
     );
