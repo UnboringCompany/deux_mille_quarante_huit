@@ -8,9 +8,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class GameProvider with ChangeNotifier {
   List<List<int>> grid = List.generate(4, (_) => List.generate(4, (_) => 0));
   int score = 0;
+  bool isDyscalculicModeEnabled = false;
   int bestScore = 0;
-
   bool isGameOver = false;
+
 
   GameProvider() {
     resetGame();
@@ -190,5 +191,10 @@ class GameProvider with ChangeNotifier {
         ],
       ),
     );
+  }
+  
+  void toggleDyscalculicMode() {
+    isDyscalculicModeEnabled = !isDyscalculicModeEnabled;
+    notifyListeners();
   }
 }

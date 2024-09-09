@@ -3,14 +3,35 @@ import 'package:provider/provider.dart';
 import 'widgets/game_provider.dart';
 import 'widgets/grid.dart';
 import 'widgets/score.dart';
+import 'widgets/settings_panel.dart';
 
-class GameScreen extends StatelessWidget {
+
+class GameScreen extends StatefulWidget {
+  @override
+  _GameScreenState createState() => _GameScreenState();
+}
+
+class _GameScreenState extends State<GameScreen> {
+  bool _isSettingsPanelOpen = false;
+
   @override
   Widget build(BuildContext context) {
     final gameProvider = context.watch<GameProvider>();
 
     return Scaffold(
-      appBar: AppBar(title: Text("2048 Flutter")),
+      appBar: AppBar(
+        title: Text("2048 Flutter"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              setState(() {
+                _isSettingsPanelOpen = !_isSettingsPanelOpen;
+              });
+            },
+          ),
+        ],
+      ),
       body: GestureDetector(
         onHorizontalDragEnd: (details) {
           if (details.velocity.pixelsPerSecond.dx > 0) {
@@ -26,13 +47,33 @@ class GameScreen extends StatelessWidget {
             gameProvider.moveUp();
           }
         },
-        child: Column(
-  children: [
-    ScoreWidget(),
-    AspectRatio(
-      aspectRatio: 1, // Maintenir une grille carrée
-      child: GridWidget(
-        physics: NeverScrollableScrollPhysics(),
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                ScoreWidget(),
+                AspectRatio(
+                  aspectRatio: 1, 
+                  child: GridWidget(
+                    physics: NeverScrollableScrollPhysics(),
+                  ),
+                ),
+              ],
+            ),
+            AnimatedPositioned(
+              duration: Duration(milliseconds: 200),
+              curve: Curves.easeInOut,
+              right: _isSettingsPanelOpen ? 0 : -MediaQuery.of(context).size.width * 0.8,
+              width: MediaQuery.of(context).size.width * 0.75,
+              height: MediaQuery.of(context).size.height,
+              child: Container(
+                color: Colors.white,
+                child: SettingsPanel(),
+              ),
+            ),
+          ],
+        ),
+
       ),
     ),
     Padding(
@@ -81,4 +122,3 @@ void main() {
     ),
   );
 }
-
