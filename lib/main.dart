@@ -59,11 +59,18 @@ class _GameScreenState extends State<GameScreen> {
                   style: TextStyle(fontSize: 36, fontWeight: FontWeight.w900, color: Colors.blueAccent),
                 ),
                 const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
-                ScoreWidget(),
-                AspectRatio(
-                  aspectRatio: 1,
-                  child: GridWidget(
-                    physics: const NeverScrollableScrollPhysics(),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ScoreWidget(),
+                      AspectRatio(
+                        aspectRatio: 1,
+                        child: GridWidget(
+                          physics: const NeverScrollableScrollPhysics(),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Padding(
@@ -111,6 +118,7 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 }
+
 
 void main() {
   runApp(
