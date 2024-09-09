@@ -5,14 +5,19 @@ import 'game_provider.dart';
 class ScoreWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final score = context.watch<GameProvider>().score;
+    final gameProvider = context.watch<GameProvider>();
     
-    return Container(
-      padding: EdgeInsets.all(16),
-      child: Text(
-        'Score: $score',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-      ),
+   return Column(
+      children: [
+        Text(
+          'Score: ${gameProvider.score}',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        Text(
+          'Meilleur Score: ${gameProvider.bestScore}',  // Afficher le meilleur score
+          style: TextStyle(fontSize: 18, color: Colors.grey),
+        ),
+      ],
     );
   }
 }

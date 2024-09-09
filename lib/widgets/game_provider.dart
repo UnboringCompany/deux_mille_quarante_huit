@@ -1,21 +1,42 @@
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GameProvider with ChangeNotifier {
   List<List<int>> grid = List.generate(4, (_) => List.generate(4, (_) => 0));
   int score = 0;
-  VoidCallback onGameOver = () {};
   bool isDyscalculicModeEnabled = false;
+  int bestScore = 0;
+  bool isGameOver = false;
 
 
   GameProvider() {
     resetGame();
+    _loadBestScore();
+  }
+
+  Future<void> _loadBestScore() async {
+    final prefs = await SharedPreferences.getInstance();
+    bestScore = prefs.getInt('bestScore') ?? 0;  // 0 si aucune valeur n'est encore enregistrée
+    notifyListeners();
+  }
+
+  Future<void> _saveBestScore() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (score > bestScore) {
+      bestScore = score;
+      await prefs.setInt('bestScore', bestScore);
+      notifyListeners();
+    }
   }
 
   void resetGame() {
     grid = List.generate(4, (_) => List.generate(4, (_) => 0));
     score = 0;
+    isGameOver = false;
     _spawnRandom();
     _spawnRandom();
     notifyListeners();
@@ -38,49 +59,70 @@ class GameProvider with ChangeNotifier {
     }
   }
 
-  void moveLeft() {
-    for (int row = 0; row < 4; row++) {
-      grid[row] = _slideAndMerge(grid[row]);
+  // Nouvelle fonction générique pour gérer les mouvements
+  void move(Function getLine, Function setLine) {
+    bool hasChanged = false;
+
+    for (int i = 0; i < 4; i++) {
+      List<int> originalLine = getLine(i);
+      List<int> newLine = _slideAndMerge(originalLine);
+      if (!listEquals(originalLine, newLine)) {
+        hasChanged = true;
+      }
+      setLine(i, newLine);
     }
+
+    if (hasChanged) {
+      nextTurn();
+    }
+  }
+
+  void moveLeft() {
+    move((i) => grid[i], (i, newLine) => grid[i] = newLine);
   }
 
   void moveRight() {
-    for (int row = 0; row < 4; row++) {
-      grid[row] = _slideAndMerge(grid[row].reversed.toList()).reversed.toList();
-    }
+    move(
+      (i) => grid[i].reversed.toList(),
+      (i, newLine) => grid[i] = newLine.reversed.toList(),
+    );
   }
 
   void moveUp() {
-    for (int col = 0; col < 4; col++) {
-      List<int> column = List.generate(4, (i) => grid[i][col]);
-      List<int> newColumn = _slideAndMerge(column);
-      for (int row = 0; row < 4; row++) {
-        grid[row][col] = newColumn[row];
-      }
-    }
+    move(
+      (i) => List.generate(4, (j) => grid[j][i]),
+      (i, newColumn) {
+        for (int j = 0; j < 4; j++) {
+          grid[j][i] = newColumn[j];
+        }
+      },
+    );
   }
 
   void moveDown() {
-    for (int col = 0; col < 4; col++) {
-      List<int> column = List.generate(4, (i) => grid[i][col]);
-      List<int> newColumn = _slideAndMerge(column.reversed.toList()).reversed.toList();
-      for (int row = 0; row < 4; row++) {
-        grid[row][col] = newColumn[row];
-      }
-    }
+    move(
+      (i) => List.generate(4, (j) => grid[j][i]).reversed.toList(),
+      (i, newColumn) {
+        for (int j = 0; j < 4; j++) {
+          grid[j][i] = newColumn.reversed.toList()[j];
+        }
+      },
+    );
   }
 
-  List<int> _slideAndMerge(List<int> row) {
-    row = row.where((e) => e != 0).toList(); // Enlever les zéros
-    for (int i = 0; i < row.length - 1; i++) {
-      if (row[i] == row[i + 1]) {
-        row[i] = row[i] * 2;
-        score += row[i];
-        row[i + 1] = 0;
+  List<int> _slideAndMerge(List<int> line) {
+    line = line.where((e) => e != 0).toList(); // Enlever les zéros
+    bool merged = false;
+    for (int i = 0; i < line.length - 1; i++) {
+      if (line[i] == line[i + 1]) {
+        line[i] = line[i] * 2;
+        score += line[i];
+        line[i + 1] = 0;
+        merged = true;
       }
     }
-    row = row.where((e) => e != 0).toList();
-    return List.generate(4, (i) => i < row.length ? row[i] : 0);
+    line = line.where((e) => e != 0).toList();
+    return List.generate(4, (i) => i < line.length ? line[i] : 0);
   }
 
   bool _isGridFull() {
@@ -95,16 +137,16 @@ class GameProvider with ChangeNotifier {
   }
 
   void nextTurn() {
-    notifyListeners(); // Notify listeners to update the UI with the movement
-
     // Add a delay before spawning a new tile
-    Future.delayed(Duration(milliseconds: 100), () {
+    Future.delayed(Duration(milliseconds: 150), () {
       _spawnRandom();
-      notifyListeners(); // Notify listeners again to update the UI with the new tile
+      notifyListeners();
 
-      if (_isGameOver() && onGameOver != null) {
-        onGameOver();
+      if (_isGameOver()) {
+        isGameOver = true;
       }
+
+      _saveBestScore();
     });
   }
 
@@ -142,7 +184,7 @@ class GameProvider with ChangeNotifier {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              // Reset du jeu ou d'autres actions
+              resetGame(); // Reset du jeu après la défaite
             },
             child: Text("Rejouer"),
           ),
@@ -150,11 +192,9 @@ class GameProvider with ChangeNotifier {
       ),
     );
   }
-
+  
   void toggleDyscalculicMode() {
     isDyscalculicModeEnabled = !isDyscalculicModeEnabled;
     notifyListeners();
   }
-
-
 }
