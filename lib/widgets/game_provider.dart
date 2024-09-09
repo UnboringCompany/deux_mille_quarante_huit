@@ -3,14 +3,33 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class GameProvider with ChangeNotifier {
   List<List<int>> grid = List.generate(4, (_) => List.generate(4, (_) => 0));
   int score = 0;
+  int bestScore = 0;
 
   bool isGameOver = false;
 
   GameProvider() {
     resetGame();
+    _loadBestScore();
+  }
+
+  Future<void> _loadBestScore() async {
+    final prefs = await SharedPreferences.getInstance();
+    bestScore = prefs.getInt('bestScore') ?? 0;  // 0 si aucune valeur n'est encore enregistrée
+    notifyListeners();
+  }
+
+  Future<void> _saveBestScore() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (score > bestScore) {
+      bestScore = score;
+      await prefs.setInt('bestScore', bestScore);
+      notifyListeners();
+    }
   }
 
   void resetGame() {
@@ -125,6 +144,8 @@ class GameProvider with ChangeNotifier {
       if (_isGameOver()) {
         isGameOver = true;
       }
+
+      _saveBestScore();
     });
   }
 
