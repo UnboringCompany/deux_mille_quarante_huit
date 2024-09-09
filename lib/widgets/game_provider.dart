@@ -6,6 +6,8 @@ class GameProvider with ChangeNotifier {
   List<List<int>> grid = List.generate(4, (_) => List.generate(4, (_) => 0));
   int score = 0;
   VoidCallback onGameOver = () {};
+  bool isDyscalculicModeEnabled = false;
+
 
   GameProvider() {
     resetGame();
@@ -131,23 +133,28 @@ class GameProvider with ChangeNotifier {
   }
 
   void _showGameOverDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text("Game Over"),
-      content: Text("Vous avez perdu !"),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-            // Reset du jeu ou d'autres actions
-          },
-          child: Text("Rejouer"),
-        ),
-      ],
-    ),
-  );
-}
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Game Over"),
+        content: Text("Vous avez perdu !"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              // Reset du jeu ou d'autres actions
+            },
+            child: Text("Rejouer"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void toggleDyscalculicMode() {
+    isDyscalculicModeEnabled = !isDyscalculicModeEnabled;
+    notifyListeners();
+  }
 
 
 }
